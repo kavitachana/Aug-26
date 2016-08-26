@@ -1,0 +1,67 @@
+package com.thezoo;
+
+import java.sql.*;
+import java.util.ArrayList;
+
+public class DAO {
+
+	static final String DB_URL = "jdbc:mysql://localhost:3306/?user=root&autoReconnect=true&useSSL=false";
+	static final String USER = "root";
+	static final String PASSWORD = "root";
+	
+	static Connection CONN = null;
+	static Statement STMT = null;
+	static PreparedStatement PREP_STMT = null;
+	static ResultSet RES_SET= null;
+	
+	public static void connToDB() {
+		
+		try {
+			System.out.println("Trying to connect to the Database.");
+			CONN = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+			System.out.println("Connected to Database.");
+			
+			
+		} catch (SQLException e) {
+			System.out.println("Failed to connect to the Database.");
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	public static void readFromDB(){
+	
+		connToDB();
+		
+		ArrayList<Animal> myAnimals = new ArrayList<>();
+		
+		try {
+			STMT = CONN.createStatement();
+			RES_SET = STMT.executeQuery("SELECT * FROM assignments.zoo_animals;");
+			
+			while(RES_SET.next()) {
+				
+				Animal animalInDB = new Animal();
+				
+				animalInDB.setStudentID(RES_SET.getString("students_id"));
+				animalInDB.setLastName(RES_SET.getString("last_name"));
+				animalInDB.setFirstName(RES_SET.getString("first_name"));
+				animalInDB.setGpa(RES_SET.getDouble("student_gpa"));
+				
+				myAnimals.add(animalInDB);
+				
+				for (Student student : ourStudents) {
+					
+					System.out.println(student.toString());
+				}
+				
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+}
